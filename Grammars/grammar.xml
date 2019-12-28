@@ -1,67 +1,234 @@
-﻿<grammar version="1.0" xml:lang="pl-PL" root="rootRule"
+﻿<grammar version="1.0" xml:lang="pl-PL" root="orderTaxiRule"
  xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
-  <rule id="rootRule"> <!-- from SAMPLE RULE -->   
-    <item repeat="0-1"> Ile jest </item>
-    <ruleref uri="#firstNumber" />
-    <tag> out.first=rules.latest(); </tag>
-    <ruleref uri="#operation" />
-    <tag> out.operation=rules.latest(); </tag>
-    <ruleref uri="#secondNumber" />
-    <tag> out.second=rules.latest(); </tag>
+ <!-- https://www.tropo.com/docs/scripting/advanced-speech-control/grammar -->
+
+  <rule id="orderTaxiRule"> <!-- Poproszę <taxi> na adres <ulica> <numer> (w dniu <data>)* na godzinę <godizna> dla <liczba> pasażerów -->
+    
+	<item repeat="0-1"> Poproszę </item>
+    <item repeat="0-1">
+      <ruleref uri="#taxi" />
+    </item>
+    
+    <item repeat="0-1"> na adres </item>
+    <item repeat="0-1"> <!-- street from DB? -->
+		<ruleref uri="#street" />   
+		<tag> out.street=rules.latest(); </tag>
+    </item>
+	<item repeat="0-1"> <!-- address number -->
+		<ruleref uri="#number" />   
+		<tag> out.num = rules.latest(); </tag>
+	</item>
+
+    <item repeat="0-1">	<!-- date -->
+		<ruleref uri="#date" />    
+		<tag> out.date=rules.latest(); </tag>
+	</item>
+	
+	<item repeat="0-1"> na godzinę </item>    
+    <item repeat="0-1">	<!-- time -->
+		<ruleref uri="#hour" />    
+		<tag> out.hour = rules.latest(); </tag>
+		<ruleref uri="#number" />    
+		<tag> out.minute = rules.latest(); </tag>		
+	</item>
+	
+	
+	<item repeat="0-1"> dla </item> 
+	<item repeat="0-1"> na </item>  
+	<item repeat="0-1"> <!-- passangers -->
+		<ruleref uri="#passangers" />    
+		<tag> out.passangers=rules.latest(); </tag>
+	</item>
+	<item repeat="0-1"> osoby </item> 
+	<item repeat="0-1"> osób </item>  
+  
+  </rule>  
+    
+
+ <!-- OPTIONS -->
+ 
+  <rule id="taxi">
+    <one-of>
+      <item>taxi</item>
+      <item>taksówkę</item>
+      <item>taryfę</item>
+    </one-of>
   </rule>
 
-  <rule id="firstNumber">
-    <one-of>
-      <item>
-        jeden <tag> out="1";</tag>
-      </item>
-      <item>
-        dwa <tag> out="2"; </tag>
-      </item>
-      <item>
-        trzy <tag> out="3"; </tag>
-      </item>
-      <item>
-        cztery <tag> out="4"; </tag>
-      </item>
+  <rule id="street">
+	<item>none</item>
+    <!-- TODO
+	<one-of>      
+      <item></item>
+    </one-of>
+	-->
+  </rule>
+  
+  <rule id="date">
+	<item>none</item>
+    <!-- * TODO https://www.tropo.com/docs/scripting/advanced-speech-control/grammar
+	<one-of>      
+      <item></item>
+    </one-of>
+	-->
+  </rule>
+    
+  <rule id="hour">
+	<one-of>
+		<item> pierwsza 			<tag> out=1; </tag>		</item>
+		<item> druga 				<tag> out=2; </tag>		</item>
+		<item> trzecia 				<tag> out=3; </tag>		</item>
+		<item> czwarta 				<tag> out=4; </tag>		</item>
+		<item> piąta 				<tag> out=5; </tag>		</item>
+		<item> szósta 				<tag> out=6; </tag>		</item>
+		<item> siódma 				<tag> out=7; </tag>		</item>
+		<item> ósma 				<tag> out=8; </tag>		</item>
+		<item> dziewiąta 			<tag> out=9; </tag>		</item>
+		<item> dziesiąta 			<tag> out=10; </tag>	</item>
+		<item> jedenasta 			<tag> out=11; </tag>	</item>
+		<item> dwunasta 			<tag> out=12; </tag>	</item>
+		<item> trzynasta 			<tag> out=13; </tag>	</item>
+		<item> czternasta 			<tag> out=14; </tag>	</item>
+		<item> piętanasta 			<tag> out=15; </tag>	</item>
+		<item> szesnasta 			<tag> out=16; </tag>	</item>
+		<item> siedemnasta 			<tag> out=17; </tag>	</item>
+		<item> osiemnasta 			<tag> out=18; </tag>	</item>
+		<item> dziewiętnasta 		<tag> out=19; </tag>	</item>
+		<item> dwudziesta 			<tag> out=20; </tag>	</item>
+		<item> dwudziesta pierwsza 	<tag> out=21; </tag>	</item>
+		<item> dwudziesta druga 	<tag> out=22; </tag>	</item>
+		<item> dwudziesta trzecia 	<tag> out=23; </tag>	</item>
+		<item> dwudziesta czwarta 	<tag> out=24; </tag>	</item>
+	</one-of>
+  </rule>
+
+  
+  <rule id="passangers">
+    <one-of> 
+      <item> jedna 			<tag> out=1;</tag>     </item>
+      <item> jednej 		<tag> out=1;</tag>     </item>
+      <item> dwie 			<tag> out=2;</tag>     </item>
+      <item> dwóch 			<tag> out=2;</tag>     </item>
+      <item> trzy 			<tag> out=3;</tag>     </item>
+      <item> trzech 		<tag> out=3;</tag>     </item>
+      <item> cztery 		<tag> out=4;</tag>     </item>
+      <item> czterech 		<tag> out=4;</tag>     </item>
+      <item> cztery 		<tag> out=4;</tag>     </item>
+      <item> pięć 			<tag> out=5;</tag>     </item>
+      <item> pięciu 		<tag> out=5;</tag>     </item>
+      <item> sześć 			<tag> out=6;</tag>     </item>
+      <item> sześciu 		<tag> out=6;</tag>     </item>
+      <item> siedem 		<tag> out=7;</tag>     </item>
+      <item> siedmiu 		<tag> out=7;</tag>     </item>
+      <item> osiem 			<tag> out=8;</tag>     </item>
+      <item> ośmiu 			<tag> out=9;</tag>     </item>
     </one-of>
   </rule>
-  <rule id="operation">
+
+
+
+  <!-- number recognition -->   
+  <rule id="number">		
     <one-of>
-      <item>
-        plus <tag>out="suma"</tag>
-      </item>
-      <item>
-        dodaj<tag>out="suma"</tag>
-      </item>
-      <item>
-        minus<tag>out="roznica"</tag>
-      </item>
-      <item>
-        odejmij<tag>out="roznica"</tag>
-      </item>
-      <item>
-        pomnóż<tag>out="iloczyn"</tag>
-      </item>
-      <item>
-        razy<tag>out="iloczyn"</tag>
-      </item>
+		<item>
+			<ruleref uri="#hundreds"/>
+			<tag> out = rules.hundreds; </tag>
+			<item repeat="0-1">
+				<one-of>
+					<item>
+						<ruleref uri="#G20to90"/>
+						<tag> out += rules.G20to90; </tag>
+						<item repeat="0-1">
+						  <ruleref uri="#G1to9"/>
+						  <tag> out += rules.G1to9; </tag>
+						</item>
+					</item>
+					<item>
+						<ruleref uri="#G10to19"/>
+						<tag> out += rules.G10to19; </tag>
+					</item>
+					<item>
+						<ruleref uri="#G1to9"/>
+						<tag> out += rules.G1to9;  </tag>
+					</item>
+				</one-of>
+			</item>  
+		</item>	
+		
+		<item>
+			<ruleref uri="#G20to90"/>
+			<tag> out = rules.G20to90; </tag>
+			<item repeat="0-1">
+			  <ruleref uri="#G1to9"/>
+			  <tag> out += rules.G1to9; </tag>
+			</item>
+		  </item>
+		  <item>
+			<ruleref uri="#G10to19"/>
+			<tag> out = rules.G10to19; </tag>
+		  </item>
+		  <item>
+			<ruleref uri="#G1to9"/>
+			<tag> out = rules.G1to9;  </tag>
+		  </item>
     </one-of>
   </rule>
-  <rule id="secondNumber">
+ 
+  <rule id="hundreds">
     <one-of>
-      <item>
-        jeden <tag> out="1";</tag>
-      </item>
-      <item>
-        dwa <tag> out="2"; </tag>
-      </item>
-      <item>
-        trzy <tag> out="3"; </tag>
-      </item>
-      <item>
-        cztery <tag> out="4"; </tag>
-      </item>
+      <item>        sto             <tag> out=100;</tag>     </item>      
+      <item>        dwieście        <tag> out=200;</tag>     </item>
+      <item>        trzysta         <tag> out=300;</tag>     </item>
+      <item>        czterysta       <tag> out=400;</tag>     </item>
+      <item>        pięćset         <tag> out=500;</tag>     </item>
+      <item>        sześćset        <tag> out=600;</tag>     </item>
+      <item>        siedemset       <tag> out=700;</tag>     </item>
+      <item>        osiemset        <tag> out=800;</tag>     </item>
+      <item>        dziewięćset     <tag> out=900;</tag>     </item>
+    </one-of>
+  </rule>  
+    
+  <rule id="G10to19">
+    <one-of>
+      <item>        dziesięć          <tag> out=10;</tag>     </item>
+      <item>        jedenaśie         <tag> out=11;</tag>      </item>
+      <item>        dwanaście         <tag> out=12;</tag>      </item>
+      <item>        trzynaście        <tag> out=13;</tag>      </item>
+      <item>        czternaście       <tag> out=14;</tag>      </item>
+      <item>        piętnaście        <tag> out=15;</tag>      </item>
+      <item>        szesnaście        <tag> out=16;</tag>      </item>
+      <item>        siedemnaście      <tag> out=17;</tag>      </item>
+      <item>        osiemnaście       <tag> out=18;</tag>      </item>      
+      <item>        dziewiętnaście    <tag> out=19;</tag>      </item>
     </one-of>
   </rule>
+  
+  <rule id="G20to90">
+    <one-of>
+      <item>        dwadzieścia         <tag> out=20;</tag>     </item>      
+      <item>        trzydzieści         <tag> out=30;</tag>     </item>
+      <item>        czterdzieści        <tag> out=40;</tag>     </item>
+      <item>        pięćdzieśiąt        <tag> out=50;</tag>     </item>
+      <item>        szcześdziesiąt      <tag> out=60;</tag>     </item>
+      <item>        siedemdziesiąt      <tag> out=70;</tag>     </item>
+      <item>        osiemdziesiąt       <tag> out=80;</tag>     </item>
+      <item>        dziewięćdziesiąt    <tag> out=90;</tag>     </item>
+    </one-of>
+  </rule>
+  
+  <rule id="G1to9">
+    <one-of>
+      <item>        jeden     <tag> out=1;</tag>      </item>
+      <item>        dwa       <tag> out=2;</tag>      </item>
+      <item>        trzy      <tag> out=3;</tag>      </item>
+      <item>        cztery    <tag> out=4;</tag>      </item>
+      <item>        pięć      <tag> out=5;</tag>      </item>
+      <item>        sześć     <tag> out=6;</tag>      </item>
+      <item>        siedem    <tag> out=7;</tag>      </item>
+      <item>        osiem     <tag> out=8;</tag>      </item>
+      <item>        dziewięć  <tag> out=9;</tag>      </item>
+    </one-of>
+  </rule>
+    
+ 
 </grammar>

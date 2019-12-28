@@ -47,10 +47,9 @@ namespace swp_projekt
             sre = new SpeechRecognitionEngine(ci); //powołanie engine rozpoznawania
             sre.SetInputToDefaultAudioDevice(); //ustawienie domyślnego urządzenia wejściowego
             sre.SpeechRecognized += Sre_SpeechRecognized;
-            //Console.WriteLine(Directory.GetCurrentDirectory());
-            //Console.WriteLine(Directory.Exists("..\\..\\Grammars"));
-            //Grammar grammar = new Grammar(".\\Grammars\\grammar.xml", "rootRule");
-            Grammar grammar = new Grammar("..\\..\\Grammars\\grammar.xml", "rootRule");
+            Grammar grammar = new Grammar("..\\..\\Grammars\\grammar.xml", "orderTaxiRule");            
+            //Grammar grammar = new Grammar("..\\..\\Grammars\\grammar.xml", "number");
+            
             grammar.Enabled = true;
             sre.LoadGrammar(grammar);
             sre.RecognizeAsync(RecognizeMode.Multiple);
@@ -63,6 +62,11 @@ namespace swp_projekt
             float confidence = e.Result.Confidence;
             if (confidence >= 0.7)
             {
+                Console.WriteLine(e.Result.Text);
+
+                //Console.WriteLine(e.Result.Semantics.ToString());
+                Console.WriteLine(e.Result.Semantics["num"].Value.ToString() );
+                /*
                 int first = Convert.ToInt32(e.Result.Semantics["first"].Value);
                 int second = Convert.ToInt32(e.Result.Semantics["second"].Value);
                 string operation = e.Result.Semantics["operation"].Value.ToString();
@@ -80,7 +84,7 @@ namespace swp_projekt
                 {
                     int mult = first * second;
                     ss.Speak("Wynik mnożenia wynosi " + mult.ToString());
-                }
+                }*/
             }
             else
             {
