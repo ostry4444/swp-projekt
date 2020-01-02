@@ -13,8 +13,27 @@ namespace swp_projekt
 
     public class TaxiOrder
     {
-        public TaxiOrder(){
+        public TaxiOrder()
+        {
             //dateTime = new DateTime();
+        }/*
+        public TaxiOrder(string address, DateTime dateTime, int seats, int phone, string name)
+        {
+            this.address = address;
+            this.date = dateTime.Day.ToString() + "." + dateTime.Month.ToString();
+            //this.dateTime = dateTime;
+            this.seats = seats;
+            this.phone = phone;
+            this.name = name;
+        }*/
+        public TaxiOrder(bool t) // test object
+        {
+            this.address = "adres 1";
+            this.date = "03.01";
+            this.time = "12:45";
+            this.seats = 2;
+            this.phone = 123456789;
+            this.name = "name";
         }
         public string address { get; set; }
         public string time { get; set; }
@@ -24,6 +43,16 @@ namespace swp_projekt
         public int phone { get; set; }
         public string name { get; set; }
 
+        public DateTime getDateTime(){
+            try{
+                return new DateTime(DateTime.Now.Year, Convert.ToInt32(this.date.Substring(0, 2)), Convert.ToInt32(this.date.Substring(3, 2)), 
+                                    Convert.ToInt32(this.time.Substring(0, 2)), Convert.ToInt32(this.time.Substring(3, 2)), 0);
+            }
+            catch(Exception e){
+                Console.WriteLine("date or time missing");
+            }
+            return new DateTime(); // ? no null dateTime
+        }
     }
 
     public partial class MainWindow : Window
@@ -38,7 +67,8 @@ namespace swp_projekt
         
         public MainWindow()
         {
-            InitializeComponent(); 
+            InitializeComponent();
+            // Console.WriteLine(DBconnector.connectionTest()); 
 
             backgroundWorker.DoWork += backgroundWorker_DoWork;
             backgroundWorker.WorkerReportsProgress = true;
@@ -116,8 +146,14 @@ namespace swp_projekt
         }
 
         private void confirm_Click(object sender, RoutedEventArgs e){
-            // TODO : save taxiOrder to DB
-            tb_INFO.Text = "ZAMÓWIONO TAKSÓWKĘ.";
+
+            if (DBconnector.InsertTaxiOrder(taxiOrder)){
+                ss.SpeakAsync("zamówiono taksówkę.");
+                tb_INFO.Text = "ZAMÓWIONO TAKSÓWKĘ.";
+            }
+            else{
+                Console.WriteLine("! problem with saving to database taxiOrder ");
+            }
         }
 
         private void clearForm()
@@ -155,8 +191,7 @@ namespace swp_projekt
                 statusAsk(label_name);
             }
             else
-                doOrder();
-            
+                doOrder();            
         }
 
         private void statusAsk(Label label)
@@ -176,15 +211,11 @@ namespace swp_projekt
         }
         private void doOrder()
         {
-            // Console.WriteLine(taxiOrder.ToString());
-            ss.SpeakAsync("zamówiono taksówkę" );
-                        
-            this.Dispatcher.BeginInvoke(new Action(() => {
+           this.Dispatcher.BeginInvoke(new Action(() => {
                 confirm_Click(null, null);
                 // clearForm();
-            }));
+           }));            
         }
-
 
         private void getAddress(SpeechRecognizedEventArgs e)
         {
@@ -329,6 +360,37 @@ namespace swp_projekt
                 taxiOrder.name = name;
                 statusOK(label_name, tb_name, taxiOrder.name); 
             }
+        }
+
+        
+        // for testing from GUI witout SRE
+
+        private void tb_address_TextChanged(object sender, TextChangedEventArgs e){
+            taxiOrder.address = tb_address.Text;
+        }
+
+        private void tb_time_TextChanged(object sender, TextChangedEventArgs e){
+            taxiOrder.time = tb_time.Text;
+        }
+
+        private void tb_date_TextChanged(object sender, TextChangedEventArgs e){
+            taxiOrder.date = tb_date.Text;
+        }
+
+        private void tb_seats_TextChanged(object sender, TextChangedEventArgs e){
+            int n = 0;
+            int.TryParse(tb_seats.Text, out n);
+            taxiOrder.seats = n;
+        }
+
+        private void tb_phone_TextChanged(object sender, TextChangedEventArgs e){
+            int n = 0;
+            int.TryParse(tb_phone.Text, out n);
+            taxiOrder.phone = n;
+        }
+
+        private void tb_name_TextChanged(object sender, TextChangedEventArgs e){
+            taxiOrder.name = tb_name.Text;
         }
     }
 }

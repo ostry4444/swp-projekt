@@ -20,12 +20,12 @@
         <Label x:Name="label_phone" Content="telefon" HorizontalAlignment="Left" Margin="30,208,0,0" VerticalAlignment="Top" Width="98" Height="31" FontWeight="Bold" FontSize="14" HorizontalContentAlignment="Right"/>
         <Label x:Name="label_name" Content="imię" HorizontalAlignment="Left" Margin="30,244,0,0" VerticalAlignment="Top" Width="98" Height="31" FontWeight="Bold" FontSize="14" HorizontalContentAlignment="Right"/>
 
-        <TextBox x:Name="tb_address" HorizontalAlignment="Left" Height="31" Margin="133,61,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276"/>
-        <TextBox x:Name="tb_time" HorizontalAlignment="Left" Height="31" Margin="133,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276"/>
-        <TextBox x:Name="tb_seats" HorizontalAlignment="Left" Height="31" Margin="133,172,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276"/>
-        <TextBox x:Name="tb_date" HorizontalAlignment="Left" Height="31" Margin="133,136,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276"/>
-        <TextBox x:Name="tb_phone" HorizontalAlignment="Left" Height="31" Margin="133,208,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276"/>
-        <TextBox x:Name="tb_name" HorizontalAlignment="Left" Height="31" Margin="133,244,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276"/>
+        <TextBox x:Name="tb_address" HorizontalAlignment="Left" Height="31" Margin="133,61,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276" TextChanged="tb_address_TextChanged"/>
+        <TextBox x:Name="tb_time" HorizontalAlignment="Left" Height="31" Margin="133,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276" TextChanged="tb_time_TextChanged"/>
+        <TextBox x:Name="tb_seats" HorizontalAlignment="Left" Height="31" Margin="133,172,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276" TextChanged="tb_seats_TextChanged"/>
+        <TextBox x:Name="tb_date" HorizontalAlignment="Left" Height="31" Margin="133,136,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276" TextChanged="tb_date_TextChanged"/>
+        <TextBox x:Name="tb_phone" HorizontalAlignment="Left" Height="31" Margin="133,208,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276" TextChanged="tb_phone_TextChanged"/>
+        <TextBox x:Name="tb_name" HorizontalAlignment="Left" Height="31" Margin="133,244,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276" TextChanged="tb_name_TextChanged"/>
 
         <Button x:Name="newOrder" Content="nowe" HorizontalAlignment="Left" Margin="67,389,0,0" VerticalAlignment="Top" Width="75" Click="newOrder_Click" FontSize="14" />
         <Button x:Name="confirm" Content="zatwierdź" HorizontalAlignment="Left" Margin="278,389,0,0" VerticalAlignment="Top" Width="75" Click="confirm_Click" FontSize="14" />
