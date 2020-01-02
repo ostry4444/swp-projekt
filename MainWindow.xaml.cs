@@ -1,22 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Synthesis;
 using System.Globalization;
-using System.IO;
 using System.ComponentModel;
 
 namespace swp_projekt
@@ -34,6 +23,7 @@ namespace swp_projekt
         public int seats { get; set; }
         public int phone { get; set; }
         public string name { get; set; }
+
     }
 
     public partial class MainWindow : Window
@@ -110,7 +100,7 @@ namespace swp_projekt
                         getPhone(e);
                     else if (String.IsNullOrEmpty(taxiOrder.name))
                         getName(e);
-
+                    
                     refineOrder();
                 }
 
@@ -127,7 +117,7 @@ namespace swp_projekt
 
         private void confirm_Click(object sender, RoutedEventArgs e){
             // TODO : save taxiOrder to DB
-            tb_INFO.Text = "ZAMÓWIONO TAKSÓWKĘ";
+            tb_INFO.Text = "ZAMÓWIONO TAKSÓWKĘ.";
         }
 
         private void clearForm()
@@ -186,12 +176,12 @@ namespace swp_projekt
         }
         private void doOrder()
         {
-            Console.WriteLine(taxiOrder.ToString());
+            // Console.WriteLine(taxiOrder.ToString());
             ss.SpeakAsync("zamówiono taksówkę" );
                         
             this.Dispatcher.BeginInvoke(new Action(() => {
                 confirm_Click(null, null);
-                clearForm();
+                // clearForm();
             }));
         }
 
@@ -236,13 +226,14 @@ namespace swp_projekt
             try{
                 minute = Convert.ToInt32(e.Result.Semantics["minute"].Value);
                 Console.WriteLine("minute: " + minute);
+                if (minute >= 60) minute = -1;
             }
             catch (Exception ex){
                 Console.WriteLine("minute missing");
             }
 
-            if (hour != -1 && minute != -1) {
-                taxiOrder.time= hour +":"+ minute;
+            if (hour != -1 && minute != -1){
+                taxiOrder.time = hour + ":" + minute;
                 statusOK(label_time, tb_time, taxiOrder.time);
             }
 
@@ -263,7 +254,7 @@ namespace swp_projekt
                 // int hour = taxiOrder.dateTime.Hour;
                 // int minute = taxiOrder.dateTime.Minute;
 
-                if (date.Length < 5) {
+                if (date.Length < 5) { 
                     if (date.Equals("0")) {
                         taxiOrder.date = DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString();
                         // taxiOrder.dateTime = DateTime.Now; // overwrite hour
@@ -309,9 +300,9 @@ namespace swp_projekt
         private void getPhone(SpeechRecognizedEventArgs e)
         {
             int phone = 0;
-            try { 
-                phone = Convert.ToInt32(e.Result.Semantics["phone"].Value);
-                Console.WriteLine("phone: " + phone);
+            try{
+                phone = Convert.ToInt32(e.Result.Semantics["phone"].Value);                 
+                Console.WriteLine("phone: " + phone );
             }
             catch (Exception ex){
                 Console.WriteLine("phone missing");
@@ -325,8 +316,19 @@ namespace swp_projekt
 
         private void getName(SpeechRecognizedEventArgs e)
         {
-            // throw new NotImplementedException();
-        }
+            String name = null;
+            try{
+                name = e.Result.Semantics["name"].Value.ToString();
+                Console.WriteLine("name: " + name);
+            }
+            catch (Exception ex){
+                Console.WriteLine("name missing");
+            }
 
+            if (!String.IsNullOrEmpty(name)){
+                taxiOrder.name = name;
+                statusOK(label_name, tb_name, taxiOrder.name); 
+            }
+        }
     }
 }
