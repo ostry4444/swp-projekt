@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
 namespace swp_projekt
@@ -125,6 +126,75 @@ namespace swp_projekt
             return false;
         }
 
-       
+        public static List<string> ReadStreets()
+        {
+            String tableName = "ADDRESSES";
+            
+            if (OpenConnection() == true)
+            {
+                List<string> addressList = new List<string>();
+
+                if (ifTableExists(tableName))
+                {
+                    string query = "SELECT DISTINCT ADDRESS_NAME FROM " + tableName + ";";
+
+                    Console.WriteLine(query);
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                    while (dataReader.Read()){
+                        addressList.Add(dataReader["ADDRESS_NAME"].ToString());
+                    }
+
+                    dataReader.Close();
+                    CloseConnection();
+                }
+                else Console.WriteLine("DBConncetor - table " + tableName + " missing");
+
+                return addressList;
+            }
+            else Console.WriteLine("DB connection problem");
+                
+            return null;
+        }
+
+        public static List <TaxiOrder> getTaxiOrders()
+        {
+            // TODO check + gui window
+            if (OpenConnection() == true)
+            {
+                List<TaxiOrder> taxiOrdersList = new List<TaxiOrder>();
+
+                if (ifTableExists("TAXI_ORDERS"))
+                {
+                    string query = "SELECT * FROM TAXI_ORDERS;";
+
+                    Console.WriteLine(query);
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                    while (dataReader.Read())
+                    {
+                        TaxiOrder taxiOrder = new TaxiOrder();
+                            taxiOrder.address   = dataReader["address"].ToString();
+                            taxiOrder.date      = dataReader["orderTime"].ToString();
+                            taxiOrder.seats     = Int32.Parse(dataReader["seats"].ToString());
+                            taxiOrder.phone     = Int32.Parse (dataReader["phone"].ToString());
+                            taxiOrder.name      = dataReader["name"].ToString();
+                        taxiOrdersList.Add(taxiOrder);
+                    }
+
+                    dataReader.Close();
+                    CloseConnection();
+                }
+                else Console.WriteLine("DBConncetor - table TAXI_ORDERS missing");
+
+                return taxiOrdersList;
+            }
+            else Console.WriteLine("DB connection problem");
+
+            return null;
+        }
+
     }
 }

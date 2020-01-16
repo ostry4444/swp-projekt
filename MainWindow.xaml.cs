@@ -7,6 +7,7 @@ using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Synthesis;
 using System.Globalization;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace swp_projekt
 {
@@ -68,7 +69,14 @@ namespace swp_projekt
         public MainWindow()
         {
             InitializeComponent();
-            // Console.WriteLine(DBconnector.connectionTest()); 
+            //Console.WriteLine(DBconnector.connectionTest());
+
+            /*
+            List<String> l = DBconnector.ReadStreets();
+            foreach (String s in l)
+            {
+                Console.WriteLine(s);
+            }*/
 
             backgroundWorker.DoWork += backgroundWorker_DoWork;
             backgroundWorker.WorkerReportsProgress = true;
