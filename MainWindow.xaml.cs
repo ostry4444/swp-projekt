@@ -125,12 +125,9 @@ namespace swp_projekt
 
                 if (txt.IndexOf("nowe") >= 0) {
                     Console.WriteLine("new order");
-                    taxiOrder = new TaxiOrder();
-                    disableGrammars();
-                    grammarStreet.Enabled = true;
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        clearForm();
+                        newOrder_Click(null, null);
                     })); 
 
                     refineOrder();
@@ -160,7 +157,7 @@ namespace swp_projekt
         
         private void newOrder_Click(object sender, RoutedEventArgs e){
             clearForm();
-
+            taxiOrder = new TaxiOrder();
             disableGrammars();
             grammarStreet.Enabled = true;
         }
