@@ -7,7 +7,6 @@ namespace swp_projekt
     static class DBconnector
     {
         private static string connstring = @"server=remotemysql.com;userid=CPll0ykcHj;password=TtEMtkjJsy;database=CPll0ykcHj";
-        // private static string connstring = @"server=sql7.freemysqlhosting.net;userid=sql7317522;password=79Tty5ap79;database=sql7317522";
         
         static MySqlConnection connection = new MySqlConnection(connstring);
         

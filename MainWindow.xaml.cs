@@ -11,10 +11,7 @@ using System.Collections.Generic;
 
 namespace swp_projekt
 {
-
-    public class TaxiOrder
-    {
-
+    public class TaxiOrder { 
         public string street { get; set; }
         public string addressNumber { get; set; }
         public string hour { get; set; }
@@ -27,8 +24,7 @@ namespace swp_projekt
 
         public DateTime getDateTime(){
             try{
-                return new DateTime(DateTime.Now.Year, Convert.ToInt32(this.month), Convert.ToInt32(this.day),
-                    Convert.ToInt32(this.hour), Convert.ToInt32(this.minute), 0);
+                return new DateTime(DateTime.Now.Year, Convert.ToInt32(this.month), Convert.ToInt32(this.day), Convert.ToInt32(this.hour), Convert.ToInt32(this.minute), 0);
             }
             catch(Exception e){
                 Console.WriteLine("! date or time missing");
@@ -36,41 +32,45 @@ namespace swp_projekt
             return new DateTime(); 
         }
 
-        public override string ToString()
-        {
+        public override string ToString(){
             return street + " " + addressNumber + "; " + hour + ":" + minute + "; " + day+"."+month + "; " + seats + "; " + phone ;
         }
     }
 
     public partial class MainWindow : Window
     {
+        static SpeechSynthesizer ss = new SpeechSynthesizer();
+        static SpeechRecognitionEngine sre;
         private readonly BackgroundWorker backgroundWorker = new BackgroundWorker();
 
-        static SpeechSynthesizer ss;
-        static SpeechRecognitionEngine sre;
         static bool done = false;
 
         static TaxiOrder taxiOrder = new TaxiOrder();
         private List<string> streets;
-        //Grammar grammar;
+
         Grammar grammarStreet, grammarAddressNumber, grammarDate, grammarTime, grammarPhone, grammarPassangers; 
 
         public MainWindow()
         {
+            if (!DBconnector.connectionTest()){
+                MessageBoxResult result = MessageBox.Show("Unable to connect to database. \nCheck Internet connection.",
+                                          "ERROR",
+                                          MessageBoxButton.OK,
+                                          MessageBoxImage.Error);
+                Environment.Exit(1);
+            } 
             streets = DBconnector.ReadStreets();
             Console.WriteLine("no streets: " + streets.Count);
 
             InitializeComponent();
-            //Console.WriteLine(DBconnector.connectionTest());
 
             backgroundWorker.DoWork += backgroundWorker_DoWork;
             backgroundWorker.WorkerReportsProgress = true;
             backgroundWorker.RunWorkerAsync();
         }
 
-        private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            ss = new SpeechSynthesizer();
             ss.SetOutputToDefaultAudioDevice();
             ss.Speak("Witam w taxi. Na jaką ulice wysłać taksówkę? ");
             CultureInfo ci = new CultureInfo("pl-PL"); 
@@ -94,11 +94,11 @@ namespace swp_projekt
             sre.LoadGrammar(grammarStreet);
             grammarStreet.Enabled = true;
 
-            grammarAddressNumber    = new Grammar("..\\..\\Grammars\\grammarAddressNumber.xml", "orderTaxiRule");
-            grammarDate             = new Grammar("..\\..\\Grammars\\grammarDate.xml", "orderTaxiRule");
-            grammarTime             = new Grammar("..\\..\\Grammars\\grammarTime.xml", "orderTaxiRule");
-            grammarPassangers       = new Grammar("..\\..\\Grammars\\grammarPassangers.xml", "orderTaxiRule");
-            grammarPhone            = new Grammar("..\\..\\Grammars\\grammarPhone.xml", "orderTaxiRule");
+            grammarAddressNumber    = new Grammar("Grammars\\grammarAddressNumber.xml", "orderTaxiRule");
+            grammarDate             = new Grammar("Grammars\\grammarDate.xml", "orderTaxiRule");
+            grammarTime             = new Grammar("Grammars\\grammarTime.xml", "orderTaxiRule");
+            grammarPassangers       = new Grammar("Grammars\\grammarPassangers.xml", "orderTaxiRule");
+            grammarPhone            = new Grammar("Grammars\\grammarPhone.xml", "orderTaxiRule");
 
             sre.LoadGrammar(grammarAddressNumber);
             sre.LoadGrammar(grammarDate);
@@ -115,7 +115,7 @@ namespace swp_projekt
             grammarStreet.Enabled = grammarAddressNumber.Enabled = grammarDate.Enabled = grammarTime.Enabled = grammarPhone.Enabled = grammarPassangers.Enabled = false;
         }
 
-        private /*static*/ void Sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        private void Sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             string txt = e.Result.Text;
             float confidence = e.Result.Confidence;
