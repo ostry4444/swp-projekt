@@ -1,0 +1,43 @@
+﻿<grammar version="1.0" xml:lang="pl-PL" root="orderTaxiRule"
+ xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
+ <!-- https://www.tropo.com/docs/scripting/advanced-speech-control/grammar -->
+
+  <rule id="orderTaxiRule"> 
+
+    <item repeat="0-1"> Poproszę </item>
+	  <item repeat="0-1"> dla </item> 
+	  <item repeat="0-1"> na </item> 
+	  <item repeat="1">
+		  <ruleref uri="#passangers" />    
+		  <tag> out.passangers=rules.latest(); </tag>
+	  </item>
+	  <item repeat="0-1"> osoby </item> 
+	  <item repeat="0-1"> osób </item>
+
+  </rule>  
+
+ <!-- URIs -->
+  
+  <rule id="passangers">
+    <one-of> 
+      <item> jedna 			<tag> out=1;</tag>     </item>
+      <item> jednej 		<tag> out=1;</tag>     </item>
+      <item> dwie 			<tag> out=2;</tag>     </item>
+      <item> dwóch 			<tag> out=2;</tag>     </item>
+      <item> trzy 			<tag> out=3;</tag>     </item>
+      <item> trzech 		<tag> out=3;</tag>     </item>
+      <item> cztery 		<tag> out=4;</tag>     </item>
+      <item> czterech 	<tag> out=4;</tag>     </item>
+      <item> cztery 		<tag> out=4;</tag>     </item>
+      <item> pięć 			<tag> out=5;</tag>     </item>
+      <item> pięciu 		<tag> out=5;</tag>     </item>
+      <item> sześć 			<tag> out=6;</tag>     </item>
+      <item> sześciu 		<tag> out=6;</tag>     </item>
+      <item> siedem 		<tag> out=7;</tag>     </item>
+      <item> siedmiu 		<tag> out=7;</tag>     </item>
+      <item> osiem 			<tag> out=8;</tag>     </item>
+      <item> ośmiu 			<tag> out=9;</tag>     </item>
+    </one-of>
+  </rule>
+  
+</grammar>

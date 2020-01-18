@@ -14,45 +14,31 @@ namespace swp_projekt
 
     public class TaxiOrder
     {
-        public TaxiOrder()
-        {
-            //dateTime = new DateTime();
-        }/*
-        public TaxiOrder(string address, DateTime dateTime, int seats, int phone, string name)
-        {
-            this.address = address;
-            this.date = dateTime.Day.ToString() + "." + dateTime.Month.ToString();
-            //this.dateTime = dateTime;
-            this.seats = seats;
-            this.phone = phone;
-            this.name = name;
-        }*/
-        public TaxiOrder(bool t) // test object
-        {
-            this.address = "adres 1";
-            this.date = "03.01";
-            this.time = "12:45";
-            this.seats = 2;
-            this.phone = 123456789;
-            this.name = "name";
-        }
-        public string address { get; set; }
-        public string time { get; set; }
-        public string date { get; set; }
-        //public DateTime dateTime { get; set; }
+
+        public string street { get; set; }
+        public string addressNumber { get; set; }
+        public string hour { get; set; }
+        public string minute { get; set; }
+        public string day { get; set; }
+        public string month { get; set; }
+        public string dateTimeStr { get; set; }
         public int seats { get; set; }
         public int phone { get; set; }
-        public string name { get; set; }
 
         public DateTime getDateTime(){
             try{
-                return new DateTime(DateTime.Now.Year, Convert.ToInt32(this.date.Substring(0, 2)), Convert.ToInt32(this.date.Substring(3, 2)), 
-                                    Convert.ToInt32(this.time.Substring(0, 2)), Convert.ToInt32(this.time.Substring(3, 2)), 0);
+                return new DateTime(DateTime.Now.Year, Convert.ToInt32(this.month), Convert.ToInt32(this.day),
+                    Convert.ToInt32(this.hour), Convert.ToInt32(this.minute), 0);
             }
             catch(Exception e){
-                Console.WriteLine("date or time missing");
+                Console.WriteLine("! date or time missing");
             }
-            return new DateTime(); // ? no null dateTime
+            return new DateTime(); 
+        }
+
+        public override string ToString()
+        {
+            return street + " " + addressNumber + "; " + hour + ":" + minute + "; " + day+"."+month + "; " + seats + "; " + phone ;
         }
     }
 
@@ -65,18 +51,17 @@ namespace swp_projekt
         static bool done = false;
 
         static TaxiOrder taxiOrder = new TaxiOrder();
-        
+        private List<string> streets;
+        //Grammar grammar;
+        Grammar grammarStreet, grammarAddressNumber, grammarDate, grammarTime, grammarPhone, grammarPassangers; 
+
         public MainWindow()
         {
+            streets = DBconnector.ReadStreets();
+            Console.WriteLine("no streets: " + streets.Count);
+
             InitializeComponent();
             //Console.WriteLine(DBconnector.connectionTest());
-
-            /*
-            List<String> l = DBconnector.ReadStreets();
-            foreach (String s in l)
-            {
-                Console.WriteLine(s);
-            }*/
 
             backgroundWorker.DoWork += backgroundWorker_DoWork;
             backgroundWorker.WorkerReportsProgress = true;
@@ -87,18 +72,47 @@ namespace swp_projekt
         {
             ss = new SpeechSynthesizer();
             ss.SetOutputToDefaultAudioDevice();
-            ss.Speak("Witam w taxi");
-            CultureInfo ci = new CultureInfo("pl-PL"); //ustawienie języka
-            sre = new SpeechRecognitionEngine(ci); //powołanie engine rozpoznawania
-            sre.SetInputToDefaultAudioDevice(); //ustawienie domyślnego urządzenia wejściowego
+            ss.Speak("Witam w taxi. Na jaką ulice wysłać taksówkę? ");
+            CultureInfo ci = new CultureInfo("pl-PL"); 
+            sre = new SpeechRecognitionEngine(ci);
+            sre.SetInputToDefaultAudioDevice();
             sre.SpeechRecognized += Sre_SpeechRecognized;
-            Grammar grammar = new Grammar("..\\..\\Grammars\\grammar.xml", "orderTaxiRule");            
-            //Grammar grammar = new Grammar("..\\..\\Grammars\\grammar.xml", "number");
+
+            GrammarBuilder buildGrammarSystem = new GrammarBuilder();
+            buildGrammarSystem.Append("nowe");
+            Grammar grammarSystem = new Grammar(buildGrammarSystem); 
+            sre.LoadGrammar(grammarSystem);
+            grammarSystem.Enabled = true;
+
+            GrammarBuilder grammarStreetBuilder = new GrammarBuilder();
+            Choices streetChoises = new Choices();
+            foreach (string s in streets)
+                streetChoises.Add(s.ToLower()); 
             
-            grammar.Enabled = true;
-            sre.LoadGrammar(grammar);
+            grammarStreetBuilder.Append(new SemanticResultKey("street", streetChoises), 1, 1);
+            grammarStreet = new Grammar(grammarStreetBuilder);
+            sre.LoadGrammar(grammarStreet);
+            grammarStreet.Enabled = true;
+
+            grammarAddressNumber    = new Grammar("..\\..\\Grammars\\grammarAddressNumber.xml", "orderTaxiRule");
+            grammarDate             = new Grammar("..\\..\\Grammars\\grammarDate.xml", "orderTaxiRule");
+            grammarTime             = new Grammar("..\\..\\Grammars\\grammarTime.xml", "orderTaxiRule");
+            grammarPassangers       = new Grammar("..\\..\\Grammars\\grammarPassangers.xml", "orderTaxiRule");
+            grammarPhone            = new Grammar("..\\..\\Grammars\\grammarPhone.xml", "orderTaxiRule");
+
+            sre.LoadGrammar(grammarAddressNumber);
+            sre.LoadGrammar(grammarDate);
+            sre.LoadGrammar(grammarTime);
+            sre.LoadGrammar(grammarPassangers);
+            sre.LoadGrammar(grammarPhone);
+            
             sre.RecognizeAsync(RecognizeMode.Multiple);
-            while (done == false) {; } //pętla w celu uniknięcia zamknięcia programu
+            while (done == false) {; } 
+        }
+
+        private void disableGrammars()
+        {
+            grammarStreet.Enabled = grammarAddressNumber.Enabled = grammarDate.Enabled = grammarTime.Enabled = grammarPhone.Enabled = grammarPassangers.Enabled = false;
         }
 
         private /*static*/ void Sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -108,36 +122,32 @@ namespace swp_projekt
             if (confidence >= 0.5){
                 Console.WriteLine(e.Result.Text);
 
-                if (txt.IndexOf("Poproszę") >= 0) {
-                    // new order
+
+                if (txt.IndexOf("nowe") >= 0) {
+                    Console.WriteLine("new order");
+                    taxiOrder = new TaxiOrder();
+                    disableGrammars();
+                    grammarStreet.Enabled = true;
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
                         clearForm();
                     })); 
-                    taxiOrder = new TaxiOrder();
-
-                    getAddress(e);  // grammar ! addrress string https://stackoverflow.com/questions/15913781/add-generic-placeholders-to-srgs-grammar  
-                    getTime(e);
-                    getDate(e);
-                    getSeats(e);
-                    getPhone(e);
-                    getName(e);     // grammar ! name string
 
                     refineOrder();
                 }
-                else {
-                    if (String.IsNullOrEmpty(taxiOrder.address))
-                        getAddress(e);
-                    else if (String.IsNullOrEmpty(taxiOrder.time))
+                else{
+                    if (String.IsNullOrEmpty(taxiOrder.street))
+                        getStreet(e);
+                    else if (String.IsNullOrEmpty(taxiOrder.addressNumber))
+                        getAddressNumber(e);
+                    else if (String.IsNullOrEmpty(taxiOrder.hour))
                         getTime(e);
-                    else if (String.IsNullOrEmpty(taxiOrder.date))
+                    else if (String.IsNullOrEmpty(taxiOrder.day))
                         getDate(e);
                     else if (taxiOrder.seats == 0) 
                         getSeats(e);
                     else if (taxiOrder.phone == 0)
                         getPhone(e);
-                    else if (String.IsNullOrEmpty(taxiOrder.name))
-                        getName(e);
                     
                     refineOrder();
                 }
@@ -146,11 +156,13 @@ namespace swp_projekt
             else { // low confidence
                 ss.Speak("Proszę powtórzyć");
             }
-
         }
-
+        
         private void newOrder_Click(object sender, RoutedEventArgs e){
             clearForm();
+
+            disableGrammars();
+            grammarStreet.Enabled = true;
         }
 
         private void confirm_Click(object sender, RoutedEventArgs e){
@@ -158,6 +170,7 @@ namespace swp_projekt
             if (DBconnector.InsertTaxiOrder(taxiOrder)){
                 ss.SpeakAsync("zamówiono taksówkę.");
                 tb_INFO.Text = "ZAMÓWIONO TAKSÓWKĘ.";
+                
             }
             else{
                 Console.WriteLine("! problem with saving to database taxiOrder ");
@@ -166,23 +179,27 @@ namespace swp_projekt
 
         private void clearForm()
         {
-            label_address.Background = label_time.Background = label_date.Background = label_seats.Background = label_phone.Background = label_name.Background = Brushes.Transparent;
-            tb_address.Text = tb_time.Text = tb_date.Text = tb_seats.Text = tb_phone.Text = tb_name.Text = "";
+            label_address.Background = label_time.Background = label_date.Background = label_seats.Background = label_phone.Background = Brushes.Transparent;
+            tb_address.Text = tb_time.Text = tb_date.Text = tb_seats.Text = tb_phone.Text = ""; 
             tb_INFO.Text = "";
-            tb.Text = "";
         }
 
         private void refineOrder()
         {
-            if (String.IsNullOrEmpty(taxiOrder.address)) {
-                ss.SpeakAsync("Na jaki adres wysłać taksówkę? ");
+            if (String.IsNullOrEmpty(taxiOrder.street))
+            {
+                ss.SpeakAsync("Na jaką ulice wysłać taksówkę? ");
                 statusAsk(label_address);
             }
-            else if (String.IsNullOrEmpty(taxiOrder.time)) { //taxiOrder.dateTime.? != ?
+            else if (String.IsNullOrEmpty(taxiOrder.addressNumber)){
+                ss.SpeakAsync("poproszę numer budynku ");
+                statusAsk(label_address);
+            }
+            else if (String.IsNullOrEmpty(taxiOrder.hour)) { 
                 ss.SpeakAsync("O której godzinie ma przyjechać taksówka? ");
                 statusAsk(label_time);
             }
-            else if (String.IsNullOrEmpty(taxiOrder.date)) { //taxiOrder.dateTime.Year!=1
+            else if (String.IsNullOrEmpty(taxiOrder.day)) { 
                 ss.SpeakAsync("W jaki dzień ma przyjechać taksówka? ");
                 statusAsk(label_date);
             }
@@ -194,14 +211,17 @@ namespace swp_projekt
                 ss.SpeakAsync("poporoszę numer telefonu ");
                 statusAsk(label_phone);
             }
-            else if (String.IsNullOrEmpty(taxiOrder.name)){
-                ss.SpeakAsync("pani/pana godność?? ");
-                statusAsk(label_name);
-            }
             else
                 doOrder();            
         }
 
+        private void setTextBox(TextBox tb, string text)
+        {
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                tb.Text = text;
+            }));
+        }
         private void statusAsk(Label label)
         {
             this.Dispatcher.BeginInvoke(new Action(() =>
@@ -225,29 +245,57 @@ namespace swp_projekt
            }));            
         }
 
-        private void getAddress(SpeechRecognizedEventArgs e)
+
+        private void getStreet(SpeechRecognizedEventArgs e)
         {
             String address = null;
-            int addressNumber = -1;
-            try {
-                address = e.Result.Semantics["address"].Value.ToString();
-                Console.WriteLine("address: " + address);
+            try{
+                address = e.Result.Semantics["street"].Value.ToString();
+                Console.WriteLine("db street: " + address);
             }
             catch (Exception ex){
-                Console.WriteLine("address missing");
+                Console.WriteLine("db street missing");
+            }
+            if (!String.IsNullOrEmpty(address))
+            {
+                taxiOrder.street = address;
+                setTextBox(tb_address, taxiOrder.street);
+                disableGrammars();
+                grammarAddressNumber.Enabled = true;
             }
 
-            try {
+        }
+
+        private void getAddressNumber(SpeechRecognizedEventArgs e)
+        {
+            int addressNumber = -1;
+            String numberAB = null;
+
+            try{
                 addressNumber = Convert.ToInt32(e.Result.Semantics["anum"].Value);
-                Console.WriteLine("addressNumber: "+ addressNumber);
+                Console.WriteLine("addressNumber: " + addressNumber);
+            }
+            catch (Exception ex){
+                Console.WriteLine("addressNumber missing");
+            }
+            try{
+                numberAB = e.Result.Semantics["ab"].Value.ToString();
+                Console.WriteLine("numberAB: " + numberAB);
             }
             catch (Exception ex){
                 Console.WriteLine("addressNumber missing");
             }
 
-            if (addressNumber != -1 && !String.IsNullOrEmpty(address) ){
-                taxiOrder.address = address + " " + addressNumber; 
-                statusOK(label_address, tb_address, taxiOrder.address);                
+            if (!string.IsNullOrEmpty(taxiOrder.street) && addressNumber != -1)
+            {
+                if (!string.IsNullOrEmpty(numberAB))
+                    taxiOrder.addressNumber = addressNumber.ToString() + numberAB;                
+                else
+                    taxiOrder.addressNumber = addressNumber.ToString();
+
+                statusOK(label_address, tb_address, taxiOrder.street+" "+taxiOrder.addressNumber);
+                disableGrammars();
+                grammarTime.Enabled = true;
             }
         }
 
@@ -272,8 +320,11 @@ namespace swp_projekt
             }
 
             if (hour != -1 && minute != -1){
-                taxiOrder.time = hour + ":" + minute;
-                statusOK(label_time, tb_time, taxiOrder.time);
+                taxiOrder.hour = hour.ToString();
+                taxiOrder.minute = minute.ToString();
+                statusOK(label_time, tb_time, taxiOrder.hour+":"+taxiOrder.minute);
+                disableGrammars();
+                grammarDate.Enabled = true;
             }
 
         }
@@ -283,39 +334,37 @@ namespace swp_projekt
             String date = null;
             try {
                 date = e.Result.Semantics["date"].Value.ToString();
-                Console.WriteLine("date: "+date );
+                Console.WriteLine("date: "+ date );
             }
             catch (Exception ex) {
                 Console.WriteLine("date missing");
             }
 
             if (!String.IsNullOrEmpty(date)){
-                // int hour = taxiOrder.dateTime.Hour;
-                // int minute = taxiOrder.dateTime.Minute;
 
-                if (date.Length < 5) { 
-                    if (date.Equals("0")) {
-                        taxiOrder.date = DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString();
-                        // taxiOrder.dateTime = DateTime.Now; // overwrite hour
-                    }else if (date.Equals("+1")){
-                        taxiOrder.date = DateTime.Now.AddDays(1).Day.ToString() + "." + DateTime.Now.AddDays(1).Month.ToString();
-                        // taxiOrder.dateTime. = DateTime.Now.AddDays(1);
+                if (date.Length < 3) {
+                    if (date.Equals("0")) { 
+                        taxiOrder.day = DateTime.Now.Day.ToString();
+                        taxiOrder.month = DateTime.Now.Month.ToString();
+                    } 
+                    else if (date.Equals("+1")) {
+                        taxiOrder.day = DateTime.Now.AddDays(1).Day.ToString();
+                        taxiOrder.month = DateTime.Now.AddDays(1).Month.ToString();
                     }
-                    else if (date.Equals("+2")){
-                        taxiOrder.date = DateTime.Now.AddDays(2).Day.ToString() + "." + DateTime.Now.AddDays(2).Month.ToString();
-                        // taxiOrder.dateTime = DateTime.Now.AddDays(2);
+                    else if (date.Equals("+2")) {
+                        taxiOrder.day = DateTime.Now.AddDays(2).Day.ToString();
+                        taxiOrder.month = DateTime.Now.AddDays(2).Month.ToString();
                     }
                 }
                 else { // exact date
-                    taxiOrder.date = date;
-
-                    // int day = Convert.ToInt32(date.Substring(0, 2));
-                    // int month = Convert.ToInt32(date.Substring(3, 2));                    
-                    // taxiOrder.dateTime = new DateTime(DateTime.Now.Year, month, day, hour, minute, 0); 
+                    string[] dd_mm = date.Split('.');
+                    taxiOrder.day = dd_mm[0];
+                    taxiOrder.month = dd_mm[1];
                 }
 
-                //tb_date.Text = taxiOrder.dateTime.Day.ToString() +"."+ taxiOrder.dateTime.Month.ToString();
-                statusOK(label_date, tb_date, taxiOrder.date);
+                statusOK(label_date, tb_date, taxiOrder.day+"."+taxiOrder.month);
+                disableGrammars();
+                grammarPassangers.Enabled = true;
             }
         }
 
@@ -333,6 +382,7 @@ namespace swp_projekt
             if (seats != 0){
                 taxiOrder.seats = seats;
                 statusOK(label_seats, tb_seats, seats.ToString());
+                grammarPhone.Enabled = true;
             }
         }
 
@@ -350,55 +400,20 @@ namespace swp_projekt
             if (phone != 0){
                 taxiOrder.phone = phone;
                 statusOK(label_phone, tb_phone, taxiOrder.phone.ToString());
+                disableGrammars();
             }
         }
 
-        private void getName(SpeechRecognizedEventArgs e)
+        private void tb_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            String name = null;
-            try{
-                name = e.Result.Semantics["name"].Value.ToString();
-                Console.WriteLine("name: " + name);
-            }
-            catch (Exception ex){
-                Console.WriteLine("name missing");
-            }
-
-            if (!String.IsNullOrEmpty(name)){
-                taxiOrder.name = name;
-                statusOK(label_name, tb_name, taxiOrder.name); 
-            }
+            List<TaxiOrder> taxiOrders = DBconnector.getTaxiOrders();
+            tb.Background = Brushes.Transparent;
+            String orders = "street; date; seats; phone";
+            foreach (TaxiOrder taxiOrder in taxiOrders)
+                orders += "\n" + taxiOrder.street + "; " + taxiOrder.dateTimeStr + "; " + taxiOrder.seats + "; " + taxiOrder.phone;
+            
+            tb.Text = orders;
         }
 
-        
-        // for testing from GUI witout SRE
-
-        private void tb_address_TextChanged(object sender, TextChangedEventArgs e){
-            taxiOrder.address = tb_address.Text;
-        }
-
-        private void tb_time_TextChanged(object sender, TextChangedEventArgs e){
-            taxiOrder.time = tb_time.Text;
-        }
-
-        private void tb_date_TextChanged(object sender, TextChangedEventArgs e){
-            taxiOrder.date = tb_date.Text;
-        }
-
-        private void tb_seats_TextChanged(object sender, TextChangedEventArgs e){
-            int n = 0;
-            int.TryParse(tb_seats.Text, out n);
-            taxiOrder.seats = n;
-        }
-
-        private void tb_phone_TextChanged(object sender, TextChangedEventArgs e){
-            int n = 0;
-            int.TryParse(tb_phone.Text, out n);
-            taxiOrder.phone = n;
-        }
-
-        private void tb_name_TextChanged(object sender, TextChangedEventArgs e){
-            taxiOrder.name = tb_name.Text;
-        }
     }
 }

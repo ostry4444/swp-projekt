@@ -71,7 +71,7 @@ namespace swp_projekt
                             seats int,
                             phone int,
                             name VARCHAR(50)
-                         )"; //timeOfOrder TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                         )"; 
 
             try { 
                 MySqlCommand cmd = new MySqlCommand(query, connection);
@@ -111,9 +111,9 @@ namespace swp_projekt
                     created = createTableTaxiOrder();
                 }
                 if (created){
-                    string query = "INSERT INTO TAXI_ORDERS (address, orderTime, seats, phone, name) VALUES("
-                            + "'" + taxiOrder.address.ToString() + "', '" + taxiOrder.getDateTime().ToString(format) + "', "
-                            + taxiOrder.seats + ", " + taxiOrder.phone + ", '" + taxiOrder.name + "'"
+                    string query = "INSERT INTO TAXI_ORDERS (address, orderTime, seats, phone) VALUES("
+                            + "'" + taxiOrder.street.ToString() + "', '" + taxiOrder.getDateTime().ToString(format) + "', "
+                            + taxiOrder.seats + ", " + taxiOrder.phone 
                             + ")";
                     Console.WriteLine(query);
                     MySqlCommand cmd = new MySqlCommand(query, connection);
@@ -160,14 +160,13 @@ namespace swp_projekt
 
         public static List <TaxiOrder> getTaxiOrders()
         {
-            // TODO check + gui window
             if (OpenConnection() == true)
             {
                 List<TaxiOrder> taxiOrdersList = new List<TaxiOrder>();
 
                 if (ifTableExists("TAXI_ORDERS"))
                 {
-                    string query = "SELECT * FROM TAXI_ORDERS;";
+                    string query = "SELECT * FROM TAXI_ORDERS ORDER BY id DESC;";
 
                     Console.WriteLine(query);
                     MySqlCommand cmd = new MySqlCommand(query, connection);
@@ -176,11 +175,10 @@ namespace swp_projekt
                     while (dataReader.Read())
                     {
                         TaxiOrder taxiOrder = new TaxiOrder();
-                            taxiOrder.address   = dataReader["address"].ToString();
-                            taxiOrder.date      = dataReader["orderTime"].ToString();
-                            taxiOrder.seats     = Int32.Parse(dataReader["seats"].ToString());
-                            taxiOrder.phone     = Int32.Parse (dataReader["phone"].ToString());
-                            taxiOrder.name      = dataReader["name"].ToString();
+                            taxiOrder.street        = dataReader["address"].ToString();
+                            taxiOrder.dateTimeStr   = dataReader["orderTime"].ToString();
+                            taxiOrder.seats         = Int32.Parse(dataReader["seats"].ToString());
+                            taxiOrder.phone         = Int32.Parse (dataReader["phone"].ToString());
                         taxiOrdersList.Add(taxiOrder);
                     }
 
