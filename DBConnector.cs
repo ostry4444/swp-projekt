@@ -127,22 +127,24 @@ namespace swp_projekt
 
         public static List<string> ReadStreets()
         {
-            String tableName = "ADDRESSES";
-            
+            String tableName = "STREETS";
+            String streetName = "NAZWA_ULICY";
+
             if (OpenConnection() == true)
             {
                 List<string> addressList = new List<string>();
 
                 if (ifTableExists(tableName))
                 {
-                    string query = "SELECT DISTINCT ADDRESS_NAME FROM " + tableName + ";";
+                    string query = "SELECT DISTINCT " + streetName + " FROM " + tableName + ";";
 
                     Console.WriteLine(query);
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = cmd.ExecuteReader();
 
-                    while (dataReader.Read()){
-                        addressList.Add(dataReader["ADDRESS_NAME"].ToString());
+                    while (dataReader.Read())
+                    {
+                        addressList.Add(dataReader[streetName].ToString());
                     }
 
                     dataReader.Close();
@@ -153,7 +155,52 @@ namespace swp_projekt
                 return addressList;
             }
             else Console.WriteLine("DB connection problem");
-                
+
+            return null;
+        }
+
+        /*
+         * returns lattitude and longitude of street stored in database. 
+         * can be called with exact addres number (exact lat long) or just street name (returns first found lat long)
+         */
+        public static double[] getLatLong(String street, String number)
+        {
+            String TABLE_NAME = "STREETS";
+            String STREET_NAME = "NAZWA_ULICY";
+            String STREET_NUMBER = "NUMER";
+            String LAT = "SZER_GEOGR";
+            String LONG = "DL_GEOGR";
+
+            if (OpenConnection() == true)
+            {
+                double[] latlong= new double[2];
+
+                if (ifTableExists(TABLE_NAME))
+                {
+                    string query;
+                    if (!String.IsNullOrEmpty(number))
+                        query = "SELECT " + LAT + ", " + LONG + " FROM " + TABLE_NAME + " WHERE " + STREET_NAME+"=\""+street+"\" AND "+STREET_NUMBER+"=\""+number+"\";";
+                    else                    
+                        query = "SELECT " + LAT + ", " + LONG + " FROM " + TABLE_NAME + " WHERE " + STREET_NAME + "=\"" + street+"\";";
+                    
+                    Console.WriteLine(query);
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                    if (dataReader.Read()){
+                        Double.TryParse(dataReader[LAT].ToString(), out latlong[0]);
+                        Double.TryParse(dataReader[LONG].ToString(), out latlong[1]);
+                    }
+
+                    dataReader.Close();
+                    CloseConnection();
+                }
+                else Console.WriteLine("DBConncetor getLatLong() - table " + TABLE_NAME + " missing");
+
+                return latlong;
+            }
+            else Console.WriteLine("DB connection problem");
+
             return null;
         }
 
