@@ -8,6 +8,8 @@ using Microsoft.Speech.Synthesis;
 using System.Globalization;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Media;
+using System.Windows.Media.Imaging;
 
 namespace swp_projekt
 {
@@ -164,10 +166,16 @@ namespace swp_projekt
 
         private void confirm_Click(object sender, RoutedEventArgs e){
 
-            if (DBconnector.InsertTaxiOrder(taxiOrder)){
-                ss.SpeakAsync("zamówiono taksówkę.");
-                tb_INFO.Text = "ZAMÓWIONO TAKSÓWKĘ.";
-                
+            if (DBconnector.InsertTaxiOrder(taxiOrder))
+            {
+                ss.Speak("zamówiono taksówkę.");
+                tb_INFO.Text = "ZAMÓWIONO TAKSÓWKĘ. \n Aby złożyć kolejne zamówienie powiedz 'nowe'";
+
+                SoundPlayer player = new SoundPlayer("Resources/car_racing.wav");
+                player.LoadCompleted += delegate (object s, AsyncCompletedEventArgs ee) {
+                    player.Play();
+                };
+                player.Load();
             }
             else{
                 Console.WriteLine("! problem with saving to database taxiOrder ");
@@ -206,6 +214,7 @@ namespace swp_projekt
             }
             else if (taxiOrder.phone == 0){
                 ss.SpeakAsync("poporoszę numer telefonu ");
+                tb_INFO.Text = "podaj numer w postaci 9-ciu cyfr";
                 statusAsk(label_phone);
             }
             else
@@ -401,15 +410,25 @@ namespace swp_projekt
             }
         }
 
+        Object tb_bgr;
         private void tb_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            List<TaxiOrder> taxiOrders = DBconnector.getTaxiOrders();
-            tb.Background = Brushes.Transparent;
-            String orders = "street; date; seats; phone";
-            foreach (TaxiOrder taxiOrder in taxiOrders)
-                orders += "\n" + taxiOrder.street + "; " + taxiOrder.dateTimeStr + "; " + taxiOrder.seats + "; " + taxiOrder.phone;
-            
-            tb.Text = orders;
+            if (tb.Background.Equals(Brushes.Transparent)){                
+                ImageBrush ib = (ImageBrush) tb_bgr;
+                ib.Stretch = Stretch.UniformToFill;
+                tb.Text = "";
+                tb.Background = ib;
+            }
+            else{
+                tb_bgr = tb.Background;
+                List<TaxiOrder> taxiOrders = DBconnector.getTaxiOrders();
+                tb.Background = Brushes.Transparent;
+                String orders = "> address; date; seats; phone";
+                foreach (TaxiOrder taxiOrder in taxiOrders)
+                    orders += "\n" + taxiOrder.street + "; " + taxiOrder.dateTimeStr + "; " + taxiOrder.seats + "; " + taxiOrder.phone;
+
+                tb.Text = orders; 
+            }
         }
 
     }

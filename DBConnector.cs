@@ -111,7 +111,7 @@ namespace swp_projekt
                 }
                 if (created){
                     string query = "INSERT INTO TAXI_ORDERS (address, orderTime, seats, phone) VALUES("
-                            + "'" + taxiOrder.street.ToString() + "', '" + taxiOrder.getDateTime().ToString(format) + "', "
+                            + "'" + taxiOrder.street.ToString()+" "+taxiOrder.addressNumber.ToString()+ "', '" + taxiOrder.getDateTime().ToString(format) + "', "
                             + taxiOrder.seats + ", " + taxiOrder.phone 
                             + ")";
                     Console.WriteLine(query);
