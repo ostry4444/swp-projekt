@@ -28,7 +28,7 @@
         <Button x:Name="newOrder" Content="nowe" HorizontalAlignment="Left" Margin="183,387,0,0" VerticalAlignment="Top" Width="75" Click="newOrder_Click" FontSize="14" Height="23" />
         <Button x:Name="confirm" Content="zatwierdź" HorizontalAlignment="Left" Margin="183,415,0,0" VerticalAlignment="Top" Width="75" Click="confirm_Click" FontSize="14" IsEnabled="False" Visibility="Hidden" Height="23" />
 
-        <TextBlock x:Name="tb" Grid.Column="1" HorizontalAlignment="Left" Height="377" Margin="38,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="458" FontSize="18" PreviewMouseDown="tb_PreviewMouseDown">
+        <TextBlock x:Name="tb" Grid.Column="1" HorizontalAlignment="Left" Height="377" Margin="38,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="458" FontSize="14" PreviewMouseDown="tb_PreviewMouseDown">
             <TextBlock.Background>
                 <ImageBrush ImageSource="Resources/taxi.jpg" Stretch="UniformToFill"/>
             </TextBlock.Background><Run>
@@ -36,7 +36,7 @@
                     <ImageBrush/>
                 </Run.Background>
             </Run></TextBlock>
-        <TextBlock HorizontalAlignment="Left" Margin="30,19,0,0" TextWrapping="Wrap" Text="DANE ZAMÓWIENIA" VerticalAlignment="Top" Height="27" Width="379" TextAlignment="Center" FontWeight="Bold" FontSize="16" TextDecorations="{x:Null}"/>
+        <TextBlock HorizontalAlignment="Left" Margin="30,19,0,0" TextWrapping="Wrap" Text="DANE ZAMÓWIENIA" VerticalAlignment="Top" Height="27" Width="419" TextAlignment="Center" FontWeight="Bold" FontSize="16" TextDecorations="{x:Null}"/>
         <Image HorizontalAlignment="Left" Height="31" Margin="414,61,0,0" VerticalAlignment="Top" Width="35" Source="Resources/address.png"/>
         <Image HorizontalAlignment="Left" Height="31" Margin="414,100,0,0" VerticalAlignment="Top" Width="35" Source="Resources/time.png"/>
         <Image HorizontalAlignment="Left" Height="31" Margin="414,136,0,0" VerticalAlignment="Top" Width="35" Source="Resources/date.png"/>

@@ -177,7 +177,8 @@
       <item>        siedem    <tag> out=7;</tag>      </item>
       <item>        osiem     <tag> out=8;</tag>      </item>
       <item>        dziewięć  <tag> out=9;</tag>      </item>
-     <!-- <item>        zero      <tag> out=0;</tag>       </item> -->
+      <item>        zero      <tag> out=0;</tag>      </item>
+      <item>        zero zero     <tag> out=0;</tag>      </item>
     </one-of>
   </rule>
 

@@ -89,8 +89,8 @@ namespace swp_projekt
             GrammarBuilder grammarStreetBuilder = new GrammarBuilder();
             Choices streetChoises = new Choices();
             foreach (string s in streets)
-                streetChoises.Add(s.ToLower()); 
-            
+                streetChoises.Add(s);
+
             grammarStreetBuilder.Append(new SemanticResultKey("street", streetChoises), 1, 1);
             grammarStreet = new Grammar(grammarStreetBuilder);
             sre.LoadGrammar(grammarStreet);
@@ -132,6 +132,7 @@ namespace swp_projekt
                         newOrder_Click(null, null);
                     })); 
 
+                    taxiOrder = new TaxiOrder();
                     refineOrder();
                 }
                 else{
@@ -170,14 +171,15 @@ namespace swp_projekt
             {
                 ss.Speak("zamówiono taksówkę.");
                 tb_INFO.Text = "ZAMÓWIONO TAKSÓWKĘ. \n Aby złożyć kolejne zamówienie powiedz 'nowe'";
-
-                SoundPlayer player = new SoundPlayer("Resources/car_racing.wav");
+                
+                SoundPlayer player = new SoundPlayer("Resources/car_racing-14db.wav");
                 player.LoadCompleted += delegate (object s, AsyncCompletedEventArgs ee) {
                     player.Play();
                 };
-                player.Load();
+                player.LoadAsync();
             }
-            else{
+            else
+            {
                 Console.WriteLine("! problem with saving to database taxiOrder ");
             }
         }
@@ -214,7 +216,7 @@ namespace swp_projekt
             }
             else if (taxiOrder.phone == 0){
                 ss.SpeakAsync("poporoszę numer telefonu ");
-                tb_INFO.Text = "podaj numer w postaci 9-ciu cyfr";
+                hint("podaj numer w postaci 9-ciu cyfr");
                 statusAsk(label_phone);
             }
             else
@@ -243,6 +245,14 @@ namespace swp_projekt
                 tb.Text = text;
             }));
         }
+        private void hint(String text)
+        {
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                tb_INFO.Text = text;
+            }));
+        }
+        
         private void doOrder()
         {
            this.Dispatcher.BeginInvoke(new Action(() => {
