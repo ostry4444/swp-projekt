@@ -88,6 +88,7 @@ namespace swp_projekt
             try{
                 string query = "SELECT * from " + tableName + ";";
                 MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.CommandTimeout = 200;
                 cmd.ExecuteScalar();
                 return true;
             }
@@ -185,6 +186,7 @@ namespace swp_projekt
                     
                     Console.WriteLine(query);
                     MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.CommandTimeout = 200;
                     MySqlDataReader dataReader = cmd.ExecuteReader();
 
                     if (dataReader.Read()){

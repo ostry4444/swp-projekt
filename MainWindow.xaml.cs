@@ -121,7 +121,7 @@ namespace swp_projekt
         {
             string txt = e.Result.Text;
             float confidence = e.Result.Confidence;
-            if (confidence >= 0.5){
+            if (confidence >= 0.8){
                 Console.WriteLine(e.Result.Text);
 
 
@@ -310,6 +310,9 @@ namespace swp_projekt
                     taxiOrder.addressNumber = addressNumber.ToString();
 
                 statusOK(label_address, tb_address, taxiOrder.street+" "+taxiOrder.addressNumber);
+                double[] latlong = DBconnector.getLatLong(taxiOrder.street, taxiOrder.addressNumber);
+                //double[] latlong = { 52.179057, 20.998776 };
+                setPushpin(latlong[0], latlong[1]);
                 disableGrammars();
                 grammarTime.Enabled = true;
             }
@@ -425,6 +428,17 @@ namespace swp_projekt
                 statusOK(label_phone, tb_phone, taxiOrder.phone.ToString());
                 disableGrammars();
             }
+        }
+        private void setPushpin(double lat, double lon)
+        {
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                pushpin.Location.Latitude = lat;
+                pushpin.Location.Longitude = lon;
+                Microsoft.Maps.MapControl.WPF.Location location = new Microsoft.Maps.MapControl.WPF.Location(lat, lon);
+                map.SetView(location, 16);
+
+            }));
         }
 
         Object tb_bgr;

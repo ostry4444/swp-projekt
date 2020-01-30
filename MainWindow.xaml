@@ -3,13 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
         xmlns:local="clr-namespace:swp_projekt"
         mc:Ignorable="d"
-        Title="TAXI" Height="480" Width="1000" Icon="Resources/ico.png">
+        Title="TAXI" Height="800" Width="1106.5" Icon="Resources/ico.png">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="29*"/>
-            <ColumnDefinition Width="33*"/>
+            <ColumnDefinition Width="232*"/>
+            <ColumnDefinition Width="264*"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <TextBlock x:Name="tb_INFO" HorizontalAlignment="Left" Height="79" Margin="30,291,0,0" VerticalAlignment="Top" Width="379" RenderTransformOrigin="0.5,0.5" FontSize="14"/>
 
@@ -25,7 +27,7 @@
         <TextBox x:Name="tb_date" HorizontalAlignment="Left" Height="31" Margin="133,136,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276" IsEnabled="False" />
         <TextBox x:Name="tb_phone" HorizontalAlignment="Left" Height="31" Margin="133,208,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276" IsEnabled="False" />
 
-        <Button x:Name="newOrder" Content="nowe" HorizontalAlignment="Left" Margin="183,387,0,0" VerticalAlignment="Top" Width="75" Click="newOrder_Click" FontSize="14" Height="23" />
+        <Button x:Name="newOrder" Content="nowe" HorizontalAlignment="Left" Margin="198,263,0,0" VerticalAlignment="Top" Width="75" Click="newOrder_Click" FontSize="14" Height="23" />
         <Button x:Name="confirm" Content="zatwierdź" HorizontalAlignment="Left" Margin="183,415,0,0" VerticalAlignment="Top" Width="75" Click="confirm_Click" FontSize="14" IsEnabled="False" Visibility="Hidden" Height="23" />
 
         <TextBlock x:Name="tb" Grid.Column="1" HorizontalAlignment="Left" Height="377" Margin="38,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="458" FontSize="14" PreviewMouseDown="tb_PreviewMouseDown">
@@ -42,6 +44,15 @@
         <Image HorizontalAlignment="Left" Height="31" Margin="414,136,0,0" VerticalAlignment="Top" Width="35" Source="Resources/date.png"/>
         <Image HorizontalAlignment="Left" Height="31" Margin="414,172,0,0" VerticalAlignment="Top" Width="35" Source="Resources/seats.png"/>
         <Image HorizontalAlignment="Left" Height="32" Margin="414,214,0,0" VerticalAlignment="Top" Width="35" Source="Resources/phone.png"/>
+        <m:Map Margin="30,409,87,10"
+               CredentialsProvider="INSERT_YOUR_BING_MAPS_KEY" 
+               Grid.ColumnSpan="2" 
+               Center="52.229676,21.012229" 
+               ZoomLevel="16"
+               Name="map">
+            <m:Pushpin Location="52.229676,21.012229" Name="pushpin"/>
+        </m:Map>
+        
 
     </Grid>
 </Window>
