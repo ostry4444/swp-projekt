@@ -45,7 +45,7 @@
         <Image HorizontalAlignment="Left" Height="31" Margin="414,172,0,0" VerticalAlignment="Top" Width="35" Source="Resources/seats.png"/>
         <Image HorizontalAlignment="Left" Height="32" Margin="414,214,0,0" VerticalAlignment="Top" Width="35" Source="Resources/phone.png"/>
         <m:Map Margin="30,409,87,10"
-               CredentialsProvider="INSERT_YOUR_BING_MAPS_KEY" 
+               CredentialsProvider="17TjuPMrBVY0T9TYVWUt~OBNOHWI209bUKiyIzYI5JQ~Ahee42b8JJDv9FJ2p-VGK-EQdxgEXngYp8wI7lJJ-AqBkt0ZOYhrxPC4_CNX5hpJ" 
                Grid.ColumnSpan="2" 
                Center="52.229676,21.012229" 
                ZoomLevel="16"

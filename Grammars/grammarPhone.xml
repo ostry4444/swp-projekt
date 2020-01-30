@@ -42,10 +42,8 @@
     </one-of>
   </rule>
   
-  <!-- number recognition -->   
+  <!-- phone version -->
   <rule id="number">
-    <one-of>
-		<item>
 			<ruleref uri="#hundreds"/>
 			<tag> out = rules.hundreds; </tag>
 			<item repeat="0-1">
@@ -67,26 +65,7 @@
 						<tag> out += rules.G1to9;  </tag>
 					</item>
 				</one-of>
-			</item>  
-		</item>	
-		
-		<item>
-			<ruleref uri="#G20to90"/>
-			<tag> out = rules.G20to90; </tag>
-			<item repeat="0-1">
-			  <ruleref uri="#G1to9"/>
-			  <tag> out += rules.G1to9; </tag>
-			</item>
-		  </item>
-		  <item>
-			<ruleref uri="#G10to19"/>
-			<tag> out = rules.G10to19; </tag>
-		  </item>
-		  <item>
-			<ruleref uri="#G1to9"/>
-			<tag> out = rules.G1to9;  </tag>
-		  </item>
-    </one-of>
+			</item> 
   </rule>
  
   <rule id="hundreds">

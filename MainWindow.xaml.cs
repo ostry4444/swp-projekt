@@ -299,22 +299,29 @@ namespace swp_projekt
                 Console.WriteLine("numberAB: " + numberAB);
             }
             catch (Exception ex){
-                Console.WriteLine("addressNumber missing");
+                Console.WriteLine("numberAB missing");
             }
 
             if (!string.IsNullOrEmpty(taxiOrder.street) && addressNumber != -1)
             {
-                if (!string.IsNullOrEmpty(numberAB))
-                    taxiOrder.addressNumber = addressNumber.ToString() + numberAB;                
-                else
-                    taxiOrder.addressNumber = addressNumber.ToString();
+                if (DBconnector.getLatLong(taxiOrder.street.ToString(), addressNumber.ToString()+numberAB)[0]!=0)
+                {
+                    if (!string.IsNullOrEmpty(numberAB))
+                        taxiOrder.addressNumber = addressNumber.ToString() + numberAB;
+                    else
+                        taxiOrder.addressNumber = addressNumber.ToString();
 
-                statusOK(label_address, tb_address, taxiOrder.street+" "+taxiOrder.addressNumber);
-                double[] latlong = DBconnector.getLatLong(taxiOrder.street, taxiOrder.addressNumber);
-                //double[] latlong = { 52.179057, 20.998776 };
-                setPushpin(latlong[0], latlong[1]);
-                disableGrammars();
-                grammarTime.Enabled = true;
+                    statusOK(label_address, tb_address, taxiOrder.street + " " + taxiOrder.addressNumber);
+                    double[] latlong = DBconnector.getLatLong(taxiOrder.street, taxiOrder.addressNumber);
+                    //double[] latlong = { 52.179057, 20.998776 };
+                    setPushpin(latlong[0], latlong[1]);
+                    disableGrammars();
+                    grammarTime.Enabled = true;
+                }
+                else
+                {
+                    ss.SpeakAsync("adres o podanym numerze nie istnieje");
+                }
             }
         }
 
