@@ -338,6 +338,9 @@ namespace swp_projekt
             if (hour != -1 && minute != -1){
                 taxiOrder.hour = hour.ToString();
                 taxiOrder.minute = minute.ToString();
+                if (taxiOrder.minute.Length == 1)
+                    taxiOrder.minute = "0" + taxiOrder.minute;
+
                 statusOK(label_time, tb_time, taxiOrder.hour+":"+taxiOrder.minute);
                 disableGrammars();
                 grammarDate.Enabled = true;
@@ -377,6 +380,10 @@ namespace swp_projekt
                     taxiOrder.day = dd_mm[0];
                     taxiOrder.month = dd_mm[1];
                 }
+                if (taxiOrder.day.Length == 1)
+                    taxiOrder.day = "0" + taxiOrder.day;
+                if (taxiOrder.month.Length == 1)
+                    taxiOrder.month = "0" + taxiOrder.month;
 
                 statusOK(label_date, tb_date, taxiOrder.day+"."+taxiOrder.month);
                 disableGrammars();
