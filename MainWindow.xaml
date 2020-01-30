@@ -48,9 +48,9 @@
                CredentialsProvider="17TjuPMrBVY0T9TYVWUt~OBNOHWI209bUKiyIzYI5JQ~Ahee42b8JJDv9FJ2p-VGK-EQdxgEXngYp8wI7lJJ-AqBkt0ZOYhrxPC4_CNX5hpJ" 
                Grid.ColumnSpan="2" 
                Center="52.229676,21.012229" 
-               ZoomLevel="16"
+               ZoomLevel="15"
                Name="map">
-            <m:Pushpin Location="52.229676,21.012229" Name="pushpin"/>
+            <m:Pushpin Location="52.229676,21.012229" Name="pushpin" Visibility="Hidden"/>
         </m:Map>
         
 

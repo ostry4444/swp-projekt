@@ -189,6 +189,7 @@ namespace swp_projekt
             label_address.Background = label_time.Background = label_date.Background = label_seats.Background = label_phone.Background = Brushes.Transparent;
             tb_address.Text = tb_time.Text = tb_date.Text = tb_seats.Text = tb_phone.Text = ""; 
             tb_INFO.Text = "";
+            pushpin.Visibility = Visibility.Hidden;
         }
 
         private void refineOrder()
@@ -442,8 +443,9 @@ namespace swp_projekt
             {
                 pushpin.Location.Latitude = lat;
                 pushpin.Location.Longitude = lon;
+                pushpin.Visibility = Visibility.Visible;
                 Microsoft.Maps.MapControl.WPF.Location location = new Microsoft.Maps.MapControl.WPF.Location(lat, lon);
-                map.SetView(location, 16);
+                map.SetView(location, 15);
 
             }));
         }
