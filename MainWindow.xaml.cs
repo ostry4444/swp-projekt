@@ -205,14 +205,17 @@ namespace swp_projekt
             }
             else if (String.IsNullOrEmpty(taxiOrder.hour)) { 
                 ss.SpeakAsync("O której godzinie ma przyjechać taksówka? ");
+                hint("podaj godzinę i minutę");
                 statusAsk(label_time);
             }
             else if (String.IsNullOrEmpty(taxiOrder.day)) { 
                 ss.SpeakAsync("W jaki dzień ma przyjechać taksówka? ");
+                hint("podaj dzień i miesiąc");
                 statusAsk(label_date);
             }
             else if (taxiOrder.seats == 0){
                 ss.SpeakAsync("na ile osób taksówka? ");
+                hint("1-8 pasażerów");
                 statusAsk(label_seats);
             }
             else if (taxiOrder.phone == 0){
